@@ -8,6 +8,7 @@ class Board extends React.Component {
     super();
     this.state = {
       status: "First player : X",
+      gameIsRunning: true,
       squares: Array(9).fill(null),
       xIsPlaying: true
     };
@@ -19,12 +20,6 @@ class Board extends React.Component {
     });
   }
 
-  handleWin(location) {
-    this.setState({
-      status: this.state.xIsPlaying ? 'X' : 'O' + " has won !"
-    });
-  }
-
   boardIsFull() {
     var numOfFilled = this.state.squares.filter(function(curr) {
       return curr != null;
@@ -33,34 +28,39 @@ class Board extends React.Component {
     return numOfFilled == this.state.squares.length;
   }
 
-  gameOver() {
-    this.setState({
-      status:"Game over.."
-    })
-  }
-
   handleTurn(location) {
-    let squares = this.state.squares;
-    squares[location] = this.state.xIsPlaying ? 'X' : 'O';
+    let squares = this.state.squares.slice();
+    squares[location] = (this.state.xIsPlaying ? 'X' : 'O');
 
-    this.setState({
-      squares: squares,
+    const winner = calculateWinner(squares);
+
+    if (winner != null) { 
+      this.setState({
+        gameIsRunning: false,
+        squares: squares,
+        status: (this.state.xIsPlaying ? 'X' : 'O') + " has won !",
+        error: "Game Over.."
     });
-
-    const winner = calculateWinner(this.state.squares);
-
-    if (winner != null) 
-      this.handleWin(location);
-    else if (this.boardIsFull())
-      this.gameOver();
-
-    this.setState({
-      xIsPlaying: !this.state.xIsPlaying,
-      status: !this.state.xIsPlaying ? 'X' : 'O' + 'Is now playing : '
-    })
+    } else if (this.boardIsFull()) {
+      this.setState({
+        status:"Game over..",
+        gameIsRunning: false,
+      })
+    } else {
+      this.setState({
+        squares: squares,
+        xIsPlaying: !this.state.xIsPlaying,
+        status: "Now playing : \'" + (!this.state.xIsPlaying ? 'X' : 'O') + "\'"
+      })
+    }
   }
 
   handleClick(i) {
+    
+    if (!this.state.gameIsRunning) {
+      return;
+    }
+    
     const squares = this.state.squares.slice();
     
     if(squares[i]) {
