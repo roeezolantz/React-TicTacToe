@@ -11,15 +11,16 @@ var Child = React.createClass({
 
 class Board extends React.Component {
   
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       status: "First player : X",
       gameIsRunning: true,
       squares: Array(9).fill(null),
-      xIsPlaying: true
+      xIsPlaying: true,
+      clearTheBoard: this.props.clearTheBoard
     };
-    this.handleClick= this.handleClick.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleError(location) {
@@ -49,13 +50,14 @@ class Board extends React.Component {
         status: (this.state.xIsPlaying ? 'X' : 'O') + " has won !",
         error: "Game Over.."
       });
-      this.state.onGameOver;
+      this.props.onGameOver(this.state.xIsPlaying ? 'X' : 'O');
     } else if (this.boardIsFull()) {
       this.setState({
         status:"Game over..",
         error : "",
         gameIsRunning: false,
-      })
+      });
+      this.props.onGameOver("tie");
     } else {
       this.setState({
         squares: squares,
@@ -80,9 +82,9 @@ class Board extends React.Component {
 
   render() {
     let currState = this.state;
-    var rows = Array(3).fill(0).map((item, row) => {
-      var cols = Array(3).fill(0).map((curr, col) => {
-        const squareID = ( col + 1 ) + (row * 3);
+    var rows = Array(parseInt(this.props.rows)).fill(0).map((item, row) => {
+      var cols = Array(parseInt(this.props.cols)).fill(0).map((curr, col) => {
+        const squareID = ( col + 1 ) + (row * parseInt(this.props.rows));
         return (
           <Square key={squareID}
             onClick={this.handleClick.bind(0,squareID)}
