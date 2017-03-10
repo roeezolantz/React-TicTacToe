@@ -3,7 +3,14 @@ import './index.css';
 import Square from './Square.js'
 import StatusBar from './StatusBar.js'
 
+var Child = React.createClass({
+  render: function() {
+    return (<div className="board wrap overlay">I'm the child</div>);
+  }
+});
+
 class Board extends React.Component {
+  
   constructor() {
     super();
     this.state = {
@@ -12,6 +19,7 @@ class Board extends React.Component {
       squares: Array(9).fill(null),
       xIsPlaying: true
     };
+    this.handleClick= this.handleClick.bind(this);
   }
 
   handleError(location) {
@@ -40,89 +48,70 @@ class Board extends React.Component {
         squares: squares,
         status: (this.state.xIsPlaying ? 'X' : 'O') + " has won !",
         error: "Game Over.."
-    });
+      });
+      this.state.onGameOver;
     } else if (this.boardIsFull()) {
       this.setState({
         status:"Game over..",
+        error : "",
         gameIsRunning: false,
       })
     } else {
       this.setState({
         squares: squares,
         xIsPlaying: !this.state.xIsPlaying,
+        error: "",
         status: "Now playing : \'" + (!this.state.xIsPlaying ? 'X' : 'O') + "\'"
       })
     }
   }
 
   handleClick(i) {
-    
     if (!this.state.gameIsRunning) {
       return;
     }
     
-    const squares = this.state.squares.slice();
-    
-    if(squares[i]) {
+    if(this.state.squares[i]) {
       this.handleError(i);
     } else {
-      this.setState({
-        error: ""
-      });
       this.handleTurn(i);
     }
-
-
-    // if (winner) {
-    //   tempStatus = 'Winner: ' + winner;
-    // } else if (squares[i]) {
-    //   errorMessage = "Try another spot please.."
-    //   this.setState({
-    //     error: errorMessage
-    //   });
-    // } else {
-    //   tempStatus = 'Now playing : ' + (!this.state.xIsPlaying ? 'X' : 'O');
-    //   squares[i] = this.state.xIsPlaying ? 'X' : 'O';
-      
-    //   this.setState({
-    //     squares: squares,
-    //     error: "",
-    //     xIsPlaying: !this.state.xIsPlaying
-    // });
-    // }
-
-    // this.setState({
-    //   status: tempStatus,
-    // });
   }
-  
-  renderSquare(i) {
-    return <Square value={this.state.squares[i]} error={this.state.error} onClick={() => this.handleClick(i)}/>;
-  }
+
   render() {
+    let currState = this.state;
+    var rows = Array(3).fill(0).map((item, row) => {
+      var cols = Array(3).fill(0).map((curr, col) => {
+        const squareID = ( col + 1 ) + (row * 3);
+        return (
+          <Square key={squareID}
+            onClick={this.handleClick.bind(0,squareID)}
+            error={currState.error}
+          >
+               { currState.squares[squareID] } 
+          </Square>
+        )
+      });
+      return (<div key={row} className="board-row"> {cols} </div>);
+    });
+  
     return (
       <div>
         <StatusBar status={this.state.status} />
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
+        <div className="board">
+          {rows}
         </div>
         <StatusBar status={this.state.error}/>
       </div>
     );
   }
 }
+
+// {
+//           !this.state.gameIsRunning
+//             ? <Child />
+//             : null
+//         }
 
 function calculateWinner(squares) {
   const lines = [
@@ -143,5 +132,11 @@ function calculateWinner(squares) {
   }
   return null;
 }
+
+Board.PropTypes = {
+  xName: React.PropTypes.string,
+  oName: React.PropTypes.string,
+  onGameOver: React.PropTypes.func.isRequired
+};
 
 export default Board;
