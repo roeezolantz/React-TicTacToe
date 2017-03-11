@@ -49,22 +49,20 @@ class Board extends React.Component {
         squares: squares,
         status: (this.state.xIsPlaying ? 'X' : 'O') + " has won !",
         error: "Game Over.."
-      });
-      this.props.onGameOver(this.state.xIsPlaying ? 'X' : 'O');
+      }, this.props.onGameOver(this.state.xIsPlaying ? 'X' : 'O'));
     } else if (this.boardIsFull()) {
       this.setState({
         status:"Game over..",
         error : "",
         gameIsRunning: false,
-      });
-      this.props.onGameOver("tie");
+      }, this.props.onGameOver("tie"));
     } else {
       this.setState({
         squares: squares,
         xIsPlaying: !this.state.xIsPlaying,
         error: "",
         status: "Now playing : \'" + (!this.state.xIsPlaying ? 'X' : 'O') + "\'"
-      })
+      }, () => null)
     }
   }
 
@@ -108,12 +106,6 @@ class Board extends React.Component {
     );
   }
 }
-
-// {
-//           !this.state.gameIsRunning
-//             ? <Child />
-//             : null
-//         }
 
 function calculateWinner(squares) {
   const lines = [
