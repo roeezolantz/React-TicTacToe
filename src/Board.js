@@ -22,7 +22,8 @@ class Board extends React.Component {
       firstIsPlaying: this.props.starter == this.props.player1,
       currPlayer: this.props.starter,
       clearTheBoard: this.props.clearTheBoard,
-      error: null
+      error: null,
+      boxesToHighlight: null
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -46,14 +47,15 @@ class Board extends React.Component {
     let squares = this.state.squares.slice();
     squares[location] = (this.state.currPlayer);
 
-    const winner = calculateWinner(squares);
+    const result = calculateWinner(squares);
 
-    if (winner != null) { 
+    if (result != null) { 
       this.setState({
         gameIsRunning: false,
         squares: squares,
         status: (this.state.currPlayer) + " has won !",
         errorPlace : null,
+        boxesToHighlight: result.seq,
         errorMessage : "Game Over..",
       }, this.props.onGameOver(this.state.currPlayer));
     } else if (this.boardIsFull()) {
@@ -97,6 +99,7 @@ class Board extends React.Component {
           <Square id={squareID} key={squareID}
             onClick={this.handleClick.bind(0,squareID)}
             error={currState.errorPlace == squareID}
+            highlight={currState.boxesToHighlight != null && currState.boxesToHighlight.indexOf(squareID) != -1}
           >
                { currState.squares[squareID] } 
           </Square>
@@ -131,7 +134,7 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {winner:squares[a], seq:lines[i]};
     }
   }
   return null;
