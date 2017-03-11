@@ -21,14 +21,16 @@ class Board extends React.Component {
       squares: Array(parseInt(this.props.rows) * parseInt(this.props.cols)).fill(null),
       firstIsPlaying: this.props.starter == this.props.player1,
       currPlayer: this.props.starter,
-      clearTheBoard: this.props.clearTheBoard
+      clearTheBoard: this.props.clearTheBoard,
+      error: null
     };
     this.handleClick = this.handleClick.bind(this);
   }
 
   handleError(location) {
     this.setState({
-      error: "Try another spot please.."
+      errorPlace : location,
+      errorMessage : "Try another spot please.."
     });
   }
 
@@ -51,12 +53,14 @@ class Board extends React.Component {
         gameIsRunning: false,
         squares: squares,
         status: (this.state.currPlayer) + " has won !",
-        error: "Game Over.."
+        errorPlace : null,
+        errorMessage : "Game Over..",
       }, this.props.onGameOver(this.state.currPlayer));
     } else if (this.boardIsFull()) {
       this.setState({
         status:"Game over..",
-        error : "",
+        errorPlace : null,
+        errorMessage : "",
         gameIsRunning: false,
       }, this.props.onGameOver("tie"));
     } else {
@@ -64,7 +68,8 @@ class Board extends React.Component {
         squares: squares,
         currPlayer: this.state.firstIsPlaying ? this.state.player2 : this.state.player1,
         firstIsPlaying: !this.state.firstIsPlaying,
-        error: "",
+        errorPlace: null, 
+        errorMessage:"",
         status: "Now playing : " + (this.state.firstIsPlaying ? this.state.player2 : this.state.player1)
       }, () => null)
     }
@@ -84,13 +89,14 @@ class Board extends React.Component {
 
   render() {
     let currState = this.state;
+    console.log(currState.error);
     var rows = Array(parseInt(this.props.rows)).fill(0).map((item, row) => {
       var cols = Array(parseInt(this.props.cols)).fill(0).map((curr, col) => {
         const squareID = ( col ) + (row * parseInt(this.props.rows));
         return (
           <Square id={squareID} key={squareID}
             onClick={this.handleClick.bind(0,squareID)}
-            error={currState.error}
+            error={currState.errorPlace == squareID}
           >
                { currState.squares[squareID] } 
           </Square>
@@ -105,7 +111,7 @@ class Board extends React.Component {
         <div className="board">
           {rows}
         </div>
-        <StatusBar status={this.state.error}/>
+        <StatusBar status={this.state.errorMessage}/>
       </div>
     );
   }
