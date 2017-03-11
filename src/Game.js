@@ -49,7 +49,7 @@ class Game extends React.Component {
             <center>
         <div className="game">
             <div className="game-board">
-            <Board rows="3" cols="3" clearTheBoard={this.props.score.clearTheBoard} onGameOver={this.updateScore.bind(this)}/>
+                <Board player1="X" player2="Y" starter="X" rows="3" cols="3" clearTheBoard={this.props.score.clearTheBoard} onGameOver={this.updateScore.bind(this)}/>
             </div>
             {this.props.score.gameIsRunning ? null : <ScoreBoard X={this.props.score.X} O={this.props.score.O}></ScoreBoard>}
             <RestartButton text="התחל משחק מחדש" onClick={this.restartGame.bind(this)}></RestartButton>

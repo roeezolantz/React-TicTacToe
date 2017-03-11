@@ -14,10 +14,13 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      status: "First player : X",
+      player1: this.props.player1,
+      player2: this.props.player2,
+      status: "First player : " + this.props.starter,
       gameIsRunning: true,
-      squares: Array(9).fill(null),
-      xIsPlaying: true,
+      squares: Array(parseInt(this.props.rows) * parseInt(this.props.cols)).fill(null),
+      firstIsPlaying: this.props.starter == this.props.player1,
+      currPlayer: this.props.starter,
       clearTheBoard: this.props.clearTheBoard
     };
     this.handleClick = this.handleClick.bind(this);
@@ -39,7 +42,7 @@ class Board extends React.Component {
 
   handleTurn(location) {
     let squares = this.state.squares.slice();
-    squares[location] = (this.state.xIsPlaying ? 'X' : 'O');
+    squares[location] = (this.state.currPlayer);
 
     const winner = calculateWinner(squares);
 
@@ -47,9 +50,9 @@ class Board extends React.Component {
       this.setState({
         gameIsRunning: false,
         squares: squares,
-        status: (this.state.xIsPlaying ? 'X' : 'O') + " has won !",
+        status: (this.state.currPlayer) + " has won !",
         error: "Game Over.."
-      }, this.props.onGameOver(this.state.xIsPlaying ? 'X' : 'O'));
+      }, this.props.onGameOver(this.state.currPlayer));
     } else if (this.boardIsFull()) {
       this.setState({
         status:"Game over..",
@@ -59,9 +62,10 @@ class Board extends React.Component {
     } else {
       this.setState({
         squares: squares,
-        xIsPlaying: !this.state.xIsPlaying,
+        currPlayer: this.state.firstIsPlaying ? this.state.player2 : this.state.player1,
+        firstIsPlaying: !this.state.firstIsPlaying,
         error: "",
-        status: "Now playing : \'" + (!this.state.xIsPlaying ? 'X' : 'O') + "\'"
+        status: "Now playing : " + (this.state.firstIsPlaying ? this.state.player2 : this.state.player1)
       }, () => null)
     }
   }
@@ -82,9 +86,9 @@ class Board extends React.Component {
     let currState = this.state;
     var rows = Array(parseInt(this.props.rows)).fill(0).map((item, row) => {
       var cols = Array(parseInt(this.props.cols)).fill(0).map((curr, col) => {
-        const squareID = ( col + 1 ) + (row * parseInt(this.props.rows));
+        const squareID = ( col ) + (row * parseInt(this.props.rows));
         return (
-          <Square key={squareID}
+          <Square id={squareID} key={squareID}
             onClick={this.handleClick.bind(0,squareID)}
             error={currState.error}
           >

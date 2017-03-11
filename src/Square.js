@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './index.css';
 
-const Square = ({children, onClick}) => {
+const Square = ({children, onClick, id, error}) => {
     return (
-        <button
+        <button id= {id}
             className="square"
             onClick={
                 () => onClick()

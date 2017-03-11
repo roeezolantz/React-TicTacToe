@@ -12,6 +12,11 @@ ol, ul {
   width: 178px;
 }
 
+.board-row {
+  width: 400px;
+  
+}
+
 .board-row:after {
   clear: both;
   content: "";
